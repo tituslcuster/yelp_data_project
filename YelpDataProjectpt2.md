@@ -72,107 +72,6 @@ The businesses in Scotssdale with listed hours show much more variablitiy in the
 Closing times displayed the highest range of variablitiy across the entire dataset, but largely for businesses in Scottsdale. Soul Food businesses generally did not change their closing times with only one exception on a single day. 'Charlie Ds Catfish & Chicken' had the only closing and opening time fluctuation for a Soul Food business occuring all on Sunday. 
 
 Two businesses did not have any weekly changes to their hours: 'Scent From Above Company' in Scottsdale and the Soul Food business 'Oinkys Pork Chop Heaven'
-
-## 2. Is there a difference in number of reviews for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
-Both groups show very different sizes of reviews due to the wide range in sample sizes. There were 20,614 reviews in the city of Scottsdale, and there were 10 reviews for the 'Soul Food' business category.
-         
-## 3. Can anything be inferred from the location data provided between businesses in Scottsdale, AZ and 'Soul Food' businesses?
-There was nothing to infer between both groups based soley off of location. This was due to the fact that both of the only two 'Soul Food' businesses are located in seperate cities (North Randall, and Phoenix), both of which don't intersect with Scottsdale. Attempting to match the constraints of the two 'Soul Food' businesses to the larger sample of Scottsdale businesses produced no crossover of latitude or longitude.
-
-
-Creating a categorization system for star numbers for ease of analysis
-```sql
-SELECT city,
-	name,
-	stars,
-	--c.category
-	CASE
-        WHEN stars = 5 THEN 'Premium Rated'
-        WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
-        WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
-        WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
-        WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
-        ELSE 'This is weird.. check on this one'
-    END AS 'StarCategory'
-FROM business
-	--FROM category c INNER JOIN business b ON c.business_id = b.id
-WHERE city = 'Scottsdale'
-ORDER BY stars;
-```
-### Finding spread of star ratings in Scotssdale
-Identifying the inputs in 'stars'
-```sql
-    SELECT DISTINCT stars
-    FROM business
-    WHERE city = 'Scottsdale'
-    ORDER BY stars desc
-```
-Counting 'Premium'
-```sql
-	SELECT stars,
-		COUNT(stars) AS Num_Premium
-	FROM business
-	WHERE city = 'Scottsdale' 
-		AND stars = 5
-```
-Counting 'Top Rated'
-```sql
-	SELECT stars,
-        COUNT(stars) AS Num_Top
-    FROM business
-    WHERE city = 'Scottsdale' 
-        AND stars >= 4 
-        AND stars < 5
-```
-Counting 'High Rated'
-```sql
-	SELECT stars,
-		COUNT(stars) AS Num_High
-	FROM business
-	WHERE city = 'Scottsdale' 
-		AND stars >= 3 
-		AND stars < 4
-```
-Counting 'Average Rated'
-```sql
-    SELECT stars,
-		COUNT(stars) AS Num_Avg
-	FROM business
-	WHERE city = 'Scottsdale' 
-		AND stars >= 2 
-		AND stars < 3
-```
-Counting 'Low Rated'
-```sql
-    SELECT stars,
-		COUNT(stars) AS Num_Low
-	FROM business
-	WHERE city = 'Scottsdale' 
-		AND stars >= 1
-		AND stars < 2
-```
-Totaling review counts based on star category
-```sql
-    SELECT SUM(review_count)
-    FROM business
-    WHERE city = 'Scottsdale'
-        AND stars = 5
-```
-Summary view of star input counts
-```sql
-	SELECT stars,
-		COUNT(stars)
-	FROM business
-	WHERE city = 'Scottsdale'
-	GROUP BY stars
-	ORDER BY stars desc
-```
-Sample of joining the hours with buisness
-```sql
-	SELECT *
-	FROM business b INNER JOIN hours h ON b.id = h.business_id
-	WHERE b.city = 'Scottsdale'
-```
 ### (Question 1) Analyzing hours for each group 
 Scottsdale
 ```sql
@@ -248,21 +147,46 @@ Soul Food
     | Phoenix       | Charlie D's Catfish & Chicken | Saturday|11:00-18:00  | Sat     |
     +---------------+-------------------------------+-----------------------+---------+
 ```
-Question #2 -- Analyzing the volume of reviews for each group
+
+## 2. Is there a difference in number of reviews for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
+Both groups show very different sizes of reviews due to the wide range in sample sizes. It is important to remember that there are 497 businesses in the city of Scottsdale that are being comparing to only 2 businesses classified as 'Soul Food' businesses. 
+
 ```sql
 	-- Scottsdale
 	SELECT SUM(review_count) AS Number_of_Reviews
 	FROM business
 	WHERE city = 'Scottsdale'
-	
+```
+```sql	
 	-- Soul Food
 	SELECT SUM(review_count) AS Number_of_Reviews
 	FROM category c INNER JOIN business b ON c.business_id = b.id
 	WHERE category = 'Soul Food';
 ```
-Question #3 -- Analyzing location data for inference
+There were 20,614 reviews in the city of Scottsdale, and there were only 10 total reviews for the 'Soul Food' business category. The difference in review count between both constraint was vast.
+         
+## 3. Can anything be inferred from the location data provided between businesses in Scottsdale, AZ and 'Soul Food' businesses?
+There is nothing to infer based off of location since both of the two 'Soul Food' businesses are located in seperate cities (North Randall, and Phoenix). To discover this I began by identifying the specific latitude and longitude of the two 'Soul Food' businesses since there were only two factors to query against for Scottsdale.
 ```sql
-	-- Scottsdale lat. and long. (trying to adjust for Soul Food lat and long)
+		SELECT DISTINCT b.name,
+			b.latitude,
+			b.longitude
+		FROM business b 
+			INNER JOIN category c ON c.business_id = b.id 
+		WHERE c.category = 'Soul Food';
+```
+```
+		+-------------------------------+----------+-----------+
+		| name                          | latitude | longitude |
+		+-------------------------------+----------+-----------+
+		| Oinky's Pork Chop Heaven      |  41.4352 |  -81.5214 |
+		| Charlie D's Catfish & Chicken |  33.4468 |  -112.057 |
+		+-------------------------------+----------+-----------+
+```
+With the coordinates identified for the smaller list of businesses, now it was time to attempt to match the two sets of variables against the 994 potential matches in latitude or longitude with the businesses in Scottsdale.
+
+```sql
+	-- Querying against the known Soul Food lat. and long.
 		SELECT DISTINCT b.name,
 			b.address,
 			b.latitude,
@@ -275,27 +199,8 @@ Question #3 -- Analyzing location data for inference
 			AND longitude < 113
 			AND longitude > 81;
 ```
-		+------+---------+----------+-----------+
-		| name | address | latitude | longitude |
-		+------+---------+----------+-----------+
-		+------+---------+----------+-----------+
-		(Zero rows)
+Attempting to match the constraints of the two 'Soul Food' businesses to the larger sample of Scottsdale businesses produced no crossover of latitude or longitude. The query above returned **no** results, meaning that no business in Scottsdale shared any latitudinal or longitudinal variables with the two 'Soul Food' businesses in the data set.
 
-Soul Food lattitude and longitude
-```sql
-		SELECT DISTINCT b.name,
-			b.latitude,
-			b.longitude
-		FROM business b 
-			INNER JOIN category c ON c.business_id = b.id 
-		WHERE c.category = 'Soul Food';
-```
-		+-------------------------------+----------+-----------+
-		| name                          | latitude | longitude |
-		+-------------------------------+----------+-----------+
-		| Oinky's Pork Chop Heaven      |  41.4352 |  -81.5214 |
-		| Charlie D's Catfish & Chicken |  33.4468 |  -112.057 |
-		+-------------------------------+----------+-----------+
 Taking a look at the highest rated businesses in Scottsdale
 ```sql 
 	SELECT name,
