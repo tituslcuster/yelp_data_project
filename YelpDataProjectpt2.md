@@ -9,26 +9,8 @@ This document covers part 2 of the assignment and contains some questions for de
 + Average Soul Food Rating: 3.75 ('Top Rated' Category)
 + Average Scottsdale Rating: 3.95 ('Average Rating' Category)
 
-### Scottsdale
-#### Spread of ratings in the city of Scottsdale
-<!--
-```
-        +-------------+-----------------+
-        | Star_Rating | Count_Of_Rating |
-        +-------------+-----------------+
-        |         5.0 |             137 |
-        |         4.5 |              86 |
-        |         4.0 |             102 |
-        |         3.5 |              63 |
-        |         3.0 |              41 |
-        |         2.5 |              34 |
-        |         2.0 |              19 |
-        |         1.5 |              10 |
-        |         1.0 |               5 |
-        +-------------+-----------------+
-        ((Total amount of rated businesses: 395))
-```
--->
+#### Scottsdale
+Spread of ratings in the city of Scottsdale
 + Scottsdale **'Premium Rated'** businesses: 137 *(2,094 total reviews)*
 + Scorrsdale **'High Rated'** businesses: 104 *(10,594 total reviews)*
 + Scottsdale **'Top Rated'** businesses: 188 *(6,730 total reviews)*
@@ -59,7 +41,7 @@ These summary data points came from simple SUM and COUNT functioning.
 
 Viewing these summary data points gives a high level view of how many businesses in Scottsdale fall into each individual star_category and how those rankings are affected by the number of reviews at a 1,000 foot view
 
-### Soul Food
+#### Soul Food
 
 Unfortunately the 'Soul Food' Yelp category only returned two rated businesses, a far cry from the 395 rated businesses from the city of Scottsdale. The aggregate star rating for each of these businesses were included under the 'stars' column.
 
@@ -73,12 +55,8 @@ Unfortunately the 'Soul Food' Yelp category only returned two rated businesses, 
 ```
 
 
-## Final Results:
-The businesses in Scotssdale with listed hours show much more variablitiy in their hours while the 'Soul Food' businesses have much more consistant hours. Opening times remain largely the same across all businesses, with the only exceptions coming on weekends. 
-
-
-
-In fact the only changes in opening time occured on Sundays.'The Cider Mill' in Scottsdale and the other 'Charlie Ds Catfish & Chicken' a Soul Food business were the only two businesses with fluctuation in opening time.
+## Answer:
+The businesses in Scotssdale with listed hours show much more variablitiy in their hours while the 'Soul Food' businesses have much more consistant hours. Opening times remain largely the same across all businesses, with the only exceptions coming on weekends.  In fact the only changes in opening time occured on Sundays.'The Cider Mill' in Scottsdale and the other 'Charlie Ds Catfish & Chicken' a Soul Food business were the only two businesses with fluctuation in opening time.
 
 ```
     +---------------+--------------------------+-----------------------+
@@ -91,10 +69,7 @@ In fact the only changes in opening time occured on Sundays.'The Cider Mill' in 
 
 ```
 
-Closing times displayed the highest range of variablitiy across the entire dataset, but largely for businesses in Scottsdale.
-
-Soul Food businesses generally did not change their closing times with only one exception on a single day.
-'Charlie Ds Catfish & Chicken' had the only closing and opening time fluctuation for a Soul Food business occuring all on Sunday.
+Closing times displayed the highest range of variablitiy across the entire dataset, but largely for businesses in Scottsdale. Soul Food businesses generally did not change their closing times with only one exception on a single day. 'Charlie Ds Catfish & Chicken' had the only closing and opening time fluctuation for a Soul Food business occuring all on Sunday. 
 
 Two businesses did not have any weekly changes to their hours: 'Scent From Above Company' in Scottsdale and the Soul Food business 'Oinkys Pork Chop Heaven'
 
