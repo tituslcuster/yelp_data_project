@@ -1,15 +1,19 @@
 # Questions and Answers
 This SQL project was a final assignment for the Couersera course "[SQL for Data Science](https://www.coursera.org/account/accomplishments/verify/K93FFFBPQ9AC)". 
 
-This document covers part 2 of the assignment and contains some questions for deeper explorartory data analysis that interested me. Unlike part one, the scope of this document is much more focused and practical. 
+This document covers part 2 of the assignment and contains some questions for deeper explorartory data analysis that interested me. Unlike part one, the scope of this document is much more focused and practical.
 
-## 1. Is there a difference in distribution of hours for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
++ Index
+0. Summary Data
+1. Question #1 -- Is there a difference in distribution of hours for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
+2. Question #2 -- Is there a difference in number of reviews for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
+3. Question #3 -- Can anything be inferred from the location data provided between businesses in Scottsdale, AZ and 'Soul Food' businesses?
+4. Question #4 -- What differences are there between open and closed businesses?
+5. Question #5 -- What are the commonalities and anomalies between businesses clustered into 'Star Categories'?
 
-### Summary Data
-+ Average Soul Food Rating: 3.75 ('Top Rated' Category)
-+ Average Scottsdale Rating: 3.95 ('Average Rating' Category)
+## Summary Data
 
-#### Scottsdale
+### Scottsdale
 Spread of ratings in the city of Scottsdale
 + Scottsdale **'Premium Rated'** businesses: 137 *(2,094 total reviews)*
 + Scorrsdale **'High Rated'** businesses: 104 *(10,594 total reviews)*
@@ -18,8 +22,9 @@ Spread of ratings in the city of Scottsdale
 + Scottsdale **'Low Rating'** businesses: 15 *(146 total reviews)*
 
 *(Total number of rated businesses in Scottsdale: 497)*
-
 *(Total number of Yelp reviews in Scottsdale: 20,614)*
+
++ Average Scottsdale Rating: 3.95 ('Average Rating' Category)
 
 These summary data points came from simple SUM and COUNT functioning.
 ```sql
@@ -41,10 +46,25 @@ These summary data points came from simple SUM and COUNT functioning.
 
 Viewing these summary data points gives a high level view of how many businesses in Scottsdale fall into each individual star_category and how those rankings are affected by the number of reviews at a 1,000 foot view
 
-#### Soul Food
+### Soul Food
 
 Unfortunately the 'Soul Food' Yelp category only returned two rated businesses, a far cry from the 395 rated businesses from the city of Scottsdale. The aggregate star rating for each of these businesses were included under the 'stars' column.
-
+```sql
+		SELECT b.city,
+		b.name,
+		c.category,
+		b.stars,
+	CASE
+		WHEN stars >= 4 AND stars <= 5 THEN 'Top Rated'
+		WHEN stars >= 3 AND stars < 4 THEN 'Average Rating'
+		WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
+		WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
+		ELSE 'Not Relevant'
+		END AS 'StarCategory'
+	FROM category c INNER JOIN business b ON c.business_id = b.id
+	WHERE c.category = 'Soul Food'
+	ORDER BY stars DESC;
+```
 ```		
     +---------------+-------------------------------+-----------+-------+----------------+
     | city          | name                          | category  | stars | StarCategory   |
@@ -53,9 +73,26 @@ Unfortunately the 'Soul Food' Yelp category only returned two rated businesses, 
     | North Randall | Oinky's Pork Chop Heaven      | Soul Food |   3.0 | Average Rating |
     +---------------+-------------------------------+-----------+-------+----------------+
 ```
+(Total number of 'Soul Food' Reviews: 10)
 
++ Average Soul Food Rating: 3.75 ('Top Rated' Category)
 
-## Answer:
+### Closed and Open Businesses
++ Closed businesses: 1,520 (35,261 reviews)
++ Open businesses: 8,480 (269,300 reviews)
+(Total businesses: 10,000)
+
+```sql
+	SELECT DISTINCT is_open
+	FROM business
+
+	SELECT COUNT(name)
+	FROM business
+	-- WHERE is_open = 0
+	-- WHERE is_open = 1
+```
+
+## 1. Is there a difference in distribution of hours for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
 The businesses in Scotssdale with listed hours show much more variablitiy in their hours while the 'Soul Food' businesses have much more consistant hours. Opening times remain largely the same across all businesses, with the only exceptions coming on weekends.  In fact the only changes in opening time occured on Sundays.'The Cider Mill' in Scottsdale and the other 'Charlie Ds Catfish & Chicken' a Soul Food business were the only two businesses with fluctuation in opening time.
 
 ```
@@ -82,7 +119,6 @@ Scottsdale
 		--SUBSTR(hours, CHARINDEX('|',hours)+1, LEN(hours)) timeopen
 		--SUBSTR(hours, POSITION('|',hours)+1, LEN(hours)) timeopen
 		--SUBSTR(hours, LEGNTH(hours) - ) timeopen
-		--None of the above options work because we are using SQLite
 	FROM business b 
 		INNER JOIN category c ON c.business_id = b.id 
 		INNER JOIN hours h ON b.id = h.business_id
@@ -203,19 +239,7 @@ Attempting to match the constraints of the two 'Soul Food' businesses to the lar
 
 ## 4. What differences are there between open and closed businesses?
 
-### Summary Data
-+ Closed businesses: 1,520 (35,261 reviews)
-+ Open businesses: 8,480 (269,300 reviews)
-(Total businesses: 10,000)
-
-
-	Explore the following for analysis:
-		1. number of reviews
-		2. spread of stars
-	
-### Here are two main differences between open and closed status businesses:
-
-### Difference #1:
+#### Difference #1:
 The disparity in number of reviews as it relates to closed vs. open businesses is quite vast. Here are two reasons that I would infer:
 1. There are more open businesses than closed businesses
 2. Open businesses are still generating new reviews and closed businesses are not
@@ -226,7 +250,7 @@ A great measure for further analysis would be the volume of reviews written duri
 
 Fortunatly the next difference will give some insight as it relates to this dataset!
          
-### Difference #2:
+#### Difference #2:
 *NOTE: The following numbers are derived from a count of businesses that have a finalized star rating independant of the review count. This means that the total count of these queries should amount back to the total amount of businesses in the database (10,000).*
 
 Unsuprisingly, open businesses had more 'top' ratings than closed businesses did, but what did suprise was the low volume of 'low' rating businesses that were closed. The largest grouping of ratings for closed businesses came from the 'average' category. Most likely this happened as a result of 'average' containing a wider spread of ratings (spanning two ratings!) skewing it slightly, but a mere 38 'low' rated businesses really displays just how far off my assumptions about review score were as they relates to businesses success. Based soley off of these numbers it looks like there is no discernable correlation between being rated 'low' and your business closing as it pertains to this dataset alone.
@@ -365,19 +389,21 @@ As mentioned earlier, here is my own categorization of star ratings under a five
 **NOTE REGARDING 'StarCategories': Values are derived from a count of businesses that have a finalized star rating independant of the review count. This means that the total count of these queries should amount back to the total amount of businesses in the database (10,000).**
 		    
          
-# Decription of the data needed and used for this analysis
+### Decription of the data needed and used for this analysis
 For the purposes of this assignment I will be analyzing only the 'premium rated' businesses against the number of reviews that they contain. Comparisons for this analysis project will be ran based on city, state, and open/closed status along with querying for outliers and summary data to get a good grasp on the larger points of this dataset. Sampleing the top ten of different variations of the dataset should be effective in examining the differences that take place at the largest volumes of star category and review count. 
 	 
- # General inferences and hypotheticals
+ ### General inferences and hypotheticals
 City and state provide different geographical contexts for business success which I am sure will have some degree of variance for comparision with such a large volume of businesses to draw from at the city or state level. Open and closed status of the business will create even more intriguing insight into the lifecycle of businesses within this dataset. My previous assumptions about open/closed status was challenged in the last question, so I anticipate even more suprises moving forward. My assumptions are that there will be only slight variance at the state level, while cities will see much higher variance in star category. Since I am now adding a split between 'average' and 'high' I would bet that most closed businesses would be in the 'average' category despite the data displaying their absence from the 'low' category.
 	
-# Final Analysis:
+### Final Analysis:
 None of the businesses within the top 10 most reviewed on Yelp had anything above a 4.5. The same group didnt dip past 2.5 as the lowest rating. I would infer that this range of rating could be the result of the prime motivator behind a consumer reviewing a business on Yelp. The main reasons why a consumer would take time to review a business on Yelp is because they had an experience that they wanted to share with other people. While average ratings for businesses might display more volume in the 'average' and 'low' categories, an area for further analysis would be if individual reviews tend more towards wide swings in star category compared to the average rating of the business.
 
 Regardless, among 'premium' businesses review count held a strong correlation with large volume of 'premium' counts across city and state metrics. The city with the most 'premium' businesses (Las Vegas) also held a strong lead ahead of all other cities in review count (diffrences of 48,351 for review count and 560 'premium' businesses). Of course Las Vegas as notable worldwide center for adult entertainment might influence its large lead ahead of other cities and states. The top ten cities displayed slight variability in position of the top ten most premium businesses compared to the ten most reviewed cities, but largely the same cities remained on the list with the exception of Chandler, AZ and Mesa, AZ.
 
 Similar to what the top ten cities with the highest review count and 'premium' business count revealed, the top ten groupings by state revealed little variability. The three states at the top of the list held the same position across both aggregations. In fact the top nine states were all the same states across review count and 'premium' business count with the only position change occuring at the fourth and fifth spots across lists alternating between North Carolina and Ohio. The tenth spot changed dramatically across lists. This most likely occured due to the same trend affecting both tables: 'premium' businesses do not numerically have a larger decrease in count moving down the list, but their decrease wildly displaces the amount of reviews. As a result of this the number of reviews becomes much less stable as 'premium' volume decreases. This is because the 'TotalNumberOfReviews' column is unaffected by number of stars meaning that the less that the 'premium' can impact the number of reviews, the less likely there will be a correlation between the two constraints.
 
+
+## Extra Queries 
 ```sql
 SELECT city
     ,name
