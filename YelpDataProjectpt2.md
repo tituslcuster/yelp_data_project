@@ -201,92 +201,19 @@ With the coordinates identified for the smaller list of businesses, now it was t
 ```
 Attempting to match the constraints of the two 'Soul Food' businesses to the larger sample of Scottsdale businesses produced no crossover of latitude or longitude. The query above returned **no** results, meaning that no business in Scottsdale shared any latitudinal or longitudinal variables with the two 'Soul Food' businesses in the data set.
 
-Taking a look at the highest rated businesses in Scottsdale
-```sql 
-	SELECT name,
-		review_count,
-		stars,
-		city,
-		state
-	FROM business
-	WHERE city = 'Scottsdale'
-	ORDER BY stars DESC, review_count DESC;
-```
-A count of Scottsdale businesses rated '5'
-```sql
-	SELECT COUNT(*)
-	FROM business
-	WHERE city = 'Scottsdale' AND stars = '5';
-```
-Calculating review numbers across different star ratings
-```sql
-	SELECT SUM(review_count) AS Number_of_Reviews
-	FROM business
-	WHERE city = 'Scottsdale' AND stars >= 3 AND stars < 4
-
-	SELECT SUM(review_count) AS Number_of_Reviews
-	FROM business
-	WHERE city = 'Scottsdale' AND stars >= 2 AND stars < 3
-```
-Calculating the total number of reviews in Scottsdale
-```sql
-	SELECT SUM(review_count) AS Total_Scottsdale_Reviews
-	FROM business
-	WHERE city = 'Scottsdale'
-```
-
-Calculating the total volume of businesses with reviews in the city of Scottsdale, AZ
-```sql
-	SELECT COUNT(review_count) AS Total_Scottsdale_Reviews
-	FROM business
-	WHERE city = 'Scottsdale'
-```
-An average rating for the city of Scottsdale with accompanying star category
-```sql
-	SELECT city,
-		AVG(stars) AS AverageRating,
-	CASE
-		WHEN stars < 4 AND stars >= 2 THEN 'Average Rating'
-		WHEN stars >= 4 THEN 'Top Rated'
-		ELSE 'Low Rating'
-	END AS 'StarCategories'
-	FROM business
-	WHERE city = 'Scottsdale'
-	GROUP BY city;
-```
----------
-Joining in order to analyze the 'Soul' food category with our previous categorization system for star numbers
-```sql
-	SELECT b.city,
-		b.name,
-		c.category,
-		b.stars,
-	CASE
-        WHEN stars = 5 THEN 'Premium Rated'
-        WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
-        WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
-        WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
-        WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
-        ELSE 'This is weird.. check on this one'
-    END AS 'StarCategory'
-	FROM category c INNER JOIN business b ON c.business_id = b.id
-	WHERE c.category = 'Soul Food'
-	ORDER BY stars DESC;
-```
----------
-
 ## 4. What differences are there between open and closed businesses?
 
-## Summary Data
+### Summary Data
 + Closed businesses: 1,520 (35,261 reviews)
 + Open businesses: 8,480 (269,300 reviews)
 (Total businesses: 10,000)
+
 
 	Explore the following for analysis:
 		1. number of reviews
 		2. spread of stars
 	
-## Here are two main differences between open and closed status businesses:
+### Here are two main differences between open and closed status businesses:
 
 ### Difference #1:
 The disparity in number of reviews as it relates to closed vs. open businesses is quite vast. Here are two reasons that I would infer:
