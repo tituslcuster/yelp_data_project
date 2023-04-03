@@ -6,8 +6,6 @@ The "Yelp" project is made up of two major parts:
 + Part 1 -- [Dataset Profiling and Understanding](https://github.com/tituslcuster/yelp_data_project/blob/main/YelpDataProjectpt1.md)
 + Part 2 -- [Inferences and Analysis](https://github.com/tituslcuster/yelp_data_project/blob/main/YelpDataProjectpt2.md)
 
-This document covers part 2 of the assignment and contains some questions for deeper explorartory data analysis that interested me. Unlike part one, the scope of this document is much more focused and practical. 
-
 The structure of the initial questions through out all of part 1 and aspects of part 2 originate from the course, but for the purposes of compiling my work I have resummarized and edited the questions for clear and consise readability. For a full look at the questions from the original assignment and my responses, check out [YelpDataProject_TitusCuster.sql](https://github.com/tituslcuster/SQL/blob/main/YelpDataProject_TitusCuster.sql).
 
 ## Business questions I will be attempting to answer with this dataset:
