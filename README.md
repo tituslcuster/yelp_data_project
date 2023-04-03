@@ -3,8 +3,8 @@
 This SQL project was a final assignment for the Couersera course "[SQL for Data Science](https://www.coursera.org/account/accomplishments/verify/K93FFFBPQ9AC)". 
 
 The "Yelp" project is made up of two major parts:
-+ Part 1 -- Dataset Profiling and Understanding
-+ Part 2 -- Inferences and Analysis
++ Part 1 -- [Dataset Profiling and Understanding](https://github.com/tituslcuster/yelp_data_project/blob/main/YelpDataProjectpt1.md)
++ Part 2 -- [Inferences and Analysis](https://github.com/tituslcuster/yelp_data_project/blob/main/YelpDataProjectpt2.md)
 
 This document covers part 2 of the assignment and contains some questions for deeper explorartory data analysis that interested me. Unlike part one, the scope of this document is much more focused and practical. 
 
