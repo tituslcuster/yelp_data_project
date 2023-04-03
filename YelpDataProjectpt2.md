@@ -1,66 +1,7 @@
-# Analyzing Data from "Yelp" (Part 2 of 2)
+# Questions and Answers
 This SQL project was a final assignment for the Couersera course "[SQL for Data Science](https://www.coursera.org/account/accomplishments/verify/K93FFFBPQ9AC)". 
 
 This document covers part 2 of the assignment and contains some questions for deeper explorartory data analysis that interested me. Unlike part one, the scope of this document is much more focused and practical. 
-
-## Business questions I will be attempting to answer with this dataset:
-1. Is there a difference in distribution of hours for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
-2. Is there a difference in number of reviews for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
-3. Can anything be inferred from the location data provided between businesses in Scottsdale, AZ and 'Soul Food' businesses?
-4. What differences are there between open and closed businesses?
-5. What are the commonalities and anomalies between businesses clustered into 'Star Categories'?
-
-<!--
-The following is a test and is currently commented out:
-
-column name|column name|
------------|-----------|
-element    |      value|
-element    |      value|
-element    |      value|
--->
-
-Throughout the course of this analysis I found it neccessary to create my own categorization of star ratings under a five tiered column entitled 'StarCategories'
-<!--
-```
-5.0 stars = 'Premium Rated'
-4.0 - 4.9 stars = 'Top Rated'
-3.0 - 3.9 stars = 'High Rating'
-2.0 - 2.9 stars = 'Average Rating'
-1.0 - 1.9 stars = 'Low Rating'
-```
--->
-**Star Spread** |**Category Name**    |
-----------------|---------------------|
-5.0 stars       |      'Premium Rated'|
-4.0 - 4.9 stars |          'Top Rated'|
-3.0 - 3.9 stars |        'High Rating'|
-2.0 - 2.9 stars |     'Average Rating'|
-1.0 - 1.9 stars |         'Low Rating'|
-
-
-I implemented this categorization system in SQL across multiple queries, but I began by applying it to the entire spread of 'business' tables entries.
-```sql
-SELECT city,
-	name,
-	stars,
-	CASE
-        WHEN stars = 5 THEN 'Premium Rated'
-        WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
-        WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
-        WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
-        WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
-        ELSE 'This is weird.. check on this one'
-    END AS 'StarCategory'
-FROM business
-ORDER BY stars DESC;
-```
-
-This was a great starting place for the rest of the project since I would often be returning to this categorization method throughout the entirity of the project!
-
-**NOTE REGARDING 'StarCategories': Values are derived from a count of businesses that have a finalized star rating independant of the review count. This means that the total count of these queries should amount back to the total amount of businesses in the database (10,000).**
-
-
 
 ## 1. Is there a difference in distribution of hours for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
 
