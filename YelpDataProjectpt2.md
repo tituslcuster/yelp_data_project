@@ -1,17 +1,17 @@
-# Questions and Answers
+# Part 2 -- Inferences and Analysis
 This SQL project was a final assignment for the Couersera course "[SQL for Data Science](https://www.coursera.org/account/accomplishments/verify/K93FFFBPQ9AC)". 
 
 This document covers part 2 of the assignment and contains some questions for deeper explorartory data analysis that interested me. Unlike part one, the scope of this document is much more focused and practical.
 
-+ Index
-0. Summary Data
+## Index
+i. Summary Data for the questions
 1. Question #1 -- Is there a difference in distribution of hours for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
 2. Question #2 -- Is there a difference in number of reviews for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
 3. Question #3 -- Can anything be inferred from the location data provided between businesses in Scottsdale, AZ and 'Soul Food' businesses?
 4. Question #4 -- What differences are there between open and closed businesses?
 5. Question #5 -- What are the commonalities and anomalies between businesses clustered into 'Star Categories'?
 
-## Summary Data
+## i. -- Summary Data
 
 ### Scottsdale
 Spread of ratings in the city of Scottsdale
@@ -242,39 +242,10 @@ Attempting to match the constraints of the two 'Soul Food' businesses to the lar
 #### Difference #1:
 The disparity in number of reviews as it relates to closed vs. open businesses is quite vast. Here are two reasons that I would infer:
 1. There are more open businesses than closed businesses
-2. Open businesses are still generating new reviews and closed businesses are not
+2. Open businesses generate new review counts and closed businesses counts are frozen
 
-There is no limit to the ammount of reviews that any one business could potentially generate compared to another, but when a business is closed that progress is frozen in time creating a widening disparity between open and closed.
-
-A great measure for further analysis would be the volume of reviews written during final three to four months of a business before it closes. Are there more reviews written (likely due to a potential flaw or vulnerabilty of their business), or would reviews plumet as a result of wanning interest by patrons?
-
-Fortunatly the next difference will give some insight as it relates to this dataset!
-         
-#### Difference #2:
-*NOTE: The following numbers are derived from a count of businesses that have a finalized star rating independant of the review count. This means that the total count of these queries should amount back to the total amount of businesses in the database (10,000).*
-
-Unsuprisingly, open businesses had more 'top' ratings than closed businesses did, but what did suprise was the low volume of 'low' rating businesses that were closed. The largest grouping of ratings for closed businesses came from the 'average' category. Most likely this happened as a result of 'average' containing a wider spread of ratings (spanning two ratings!) skewing it slightly, but a mere 38 'low' rated businesses really displays just how far off my assumptions about review score were as they relates to businesses success. Based soley off of these numbers it looks like there is no discernable correlation between being rated 'low' and your business closing as it pertains to this dataset alone.
-
-	Low Rated Open: 324
-	Average Rated Open: 3,801
-	Top Rated Open: 4,355
-	-----
-	Low Rated Closed: 38
-	Average Rated Closed: 829
-	Top Rated Closed: 653
-
-         
 ```sql
-	SELECT DISTINCT is_open
-	FROM business
-
-	SELECT COUNT(name)
-	FROM business
-	-- WHERE is_open = 0
-	-- WHERE is_open = 1
-```
-Examining number of reviews 
-```sql
+	-- Examining number of reviews 
 	SELECT 
 		CASE 
 			WHEN is_open = 1 THEN 'Open'
@@ -294,34 +265,28 @@ Examining number of reviews
 		| Closed      |       35,261 |
 		+-------------+--------------+
 ```
-Examining spread of star
-```sql
-	SELECT COUNT(name) AS 'Low Rated & Open Businesses'
-	FROM business
-	WHERE is_open = 1
-		AND stars < 2
-```
-```
-		+-----------------------------+
-		| Low Rated & Open Businesses |
-		+-----------------------------+
-		|                         324 |
-		+-----------------------------+
-```
-```sql
-	SELECT COUNT(name) AS 'Average Rated & Open Businesses'
-	FROM business
-	WHERE is_open = 1
-		AND stars < 4 
-		AND stars >= 2
-```
-```
-		+---------------------------------+
-		| Average Rated & Open Businesses |
-		+---------------------------------+
-		|                            3801 |
-		+---------------------------------+
-```
+
+There is no limit to the ammount of reviews that any one business could potentially generate compared to another, but when a business is closed that progress is frozen in time creating a widening disparity between open and closed.
+
+A great measure for further analysis would be the volume of reviews written during final three to four months of a business before it closes. Are there more reviews written (likely due to a potential flaw or vulnerabilty of their business), or would reviews plumet as a result of wanning interest by patrons?
+
+Fortunatly the next difference will give some insight as it relates to this dataset!
+         
+#### Difference #2:
+*NOTE: The following numbers are derived from a count of businesses that have a finalized star rating independant of the review count. This means that the total count of these queries should amount back to the total amount of businesses in the database (10,000).*
+
+
+Unsuprisingly, open businesses had more 'top' ratings than closed businesses did, but what did suprise was the low volume of 'low' rating businesses that were closed. The largest grouping of ratings for closed businesses came from the 'average' category. Most likely this happened as a result of 'average' containing a wider spread of ratings (spanning two ratings!) skewing it slightly, but a mere 38 'low' rated businesses really displays just how far off my assumptions about review score were as they relates to businesses success. Based soley off of these numbers it looks like there is no discernable correlation between being rated 'low' and your business closing as it pertains to this dataset alone.
+
+	Low Rated Open: 324
+	Average Rated Open: 3,801
+	Top Rated Open: 4,355
+	-----
+	Low Rated Closed: 38
+	Average Rated Closed: 829
+	Top Rated Closed: 653
+
+*Querying for each of these findings was as simple as constraining and aliasing with the proper label*
 ```sql
 	SELECT COUNT(name) AS 'Top Rated & Open Businesses'
 	FROM business
@@ -334,51 +299,10 @@ Examining spread of star
 		+-----------------------------+
 		|                        4355 |
 		+-----------------------------+
-```
-```sql
-	SELECT COUNT(name) AS 'Low Rated & Closed Businesses'
-	FROM business
-	WHERE is_open = 0
-		AND stars < 2
-```
-```
-		+-------------------------------+
-		| Low Rated & Closed Businesses |
-		+-------------------------------+
-		|                            38 |
-		+-------------------------------+
-```
-```sql
-	SELECT COUNT(name) AS 'Average Rated & Closed Businesses'
-	FROM business
-	WHERE is_open = 0
-		AND stars < 4 
-		AND stars >= 2
-```
-```
-		+-----------------------------------+
-		| Average Rated & Closed Businesses |
-		+-----------------------------------+
-		|                               829 |
-		+-----------------------------------+
-```sql
-	SELECT COUNT(name) AS 'Top Rated & Closed Businesses'
-	FROM business
-	WHERE is_open = 0
-		AND stars >= 4
-```
-```
-		+-------------------------------+
-		| Top Rated & Closed Businesses |
-		+-------------------------------+
-		|                           653 |
-		+-------------------------------+
-```
+```      
 
 ## 5. What are the commonalities and anomalies between businesses clustered into 'Star Categories'?	
-For the final part of my analysis I will be clustering businesses around categories of stars in order to find commonalities and anomalies between them.
-
-As mentioned earlier, here is my own categorization of star ratings under a five tiered column entitled 'StarCategories'
+The Star Categories are as follows:s
 ```
 5.0 stars = 'Premium Rated'
 4.0 - 4.9 stars = 'Top Rated'
@@ -390,17 +314,163 @@ As mentioned earlier, here is my own categorization of star ratings under a five
 		    
          
 ### Decription of the data needed and used for this analysis
-For the purposes of this assignment I will be analyzing only the 'premium rated' businesses against the number of reviews that they contain. Comparisons for this analysis project will be ran based on city, state, and open/closed status along with querying for outliers and summary data to get a good grasp on the larger points of this dataset. Sampleing the top ten of different variations of the dataset should be effective in examining the differences that take place at the largest volumes of star category and review count. 
-	 
- ### General inferences and hypotheticals
-City and state provide different geographical contexts for business success which I am sure will have some degree of variance for comparision with such a large volume of businesses to draw from at the city or state level. Open and closed status of the business will create even more intriguing insight into the lifecycle of businesses within this dataset. My previous assumptions about open/closed status was challenged in the last question, so I anticipate even more suprises moving forward. My assumptions are that there will be only slight variance at the state level, while cities will see much higher variance in star category. Since I am now adding a split between 'average' and 'high' I would bet that most closed businesses would be in the 'average' category despite the data displaying their absence from the 'low' category.
-	
-### Final Analysis:
+For the purposes of this analysis I focused only the 'premium rated' businesses against the number of reviews that they contained. Comparisons were ran based on city, state, and open/closed status while querying for outliers and summary data to get a good grasp on the larger points of this dataset. Sampleing the top ten of different variations of the dataset proved effective in examining the larger differences between the greatest volumes of star category and review count. 
+
 None of the businesses within the top 10 most reviewed on Yelp had anything above a 4.5. The same group didnt dip past 2.5 as the lowest rating. I would infer that this range of rating could be the result of the prime motivator behind a consumer reviewing a business on Yelp. The main reasons why a consumer would take time to review a business on Yelp is because they had an experience that they wanted to share with other people. While average ratings for businesses might display more volume in the 'average' and 'low' categories, an area for further analysis would be if individual reviews tend more towards wide swings in star category compared to the average rating of the business.
 
+```sql
+-- Top 10 businesses with the most reviews
+		SELECT name 
+		,review_count
+		,stars
+		,CASE
+			WHEN stars = 5 THEN 'Premium Rated'
+			WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
+			WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
+			WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
+			WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
+			ELSE 'This is weird.. check on this one'
+		END AS 'StarCategory'
+		,state
+		,city
+	FROM business
+	ORDER BY review_count DESC
+	LIMIT 10;
+```    
+```
+	+----------------------+--------------+-------+----------------+-------+-----------+
+	| name                 | review_count | stars | StarCategory   | state | city      |
+	+----------------------+--------------+-------+----------------+-------+-----------+
+	| The Buffet           |         3873 |   3.5 | High Rating    | NV    | Las Vegas |
+	| Schwartz's           |         1757 |   4.0 | Top Rated      | QC    | Montréal  |
+	| Joe's Farm Grill     |         1549 |   4.0 | Top Rated      | AZ    | Gilbert   |
+	| Carson Kitchen       |         1410 |   4.5 | Top Rated      | NV    | Las Vegas |
+	| Delmonico Steakhouse |         1389 |   4.0 | Top Rated      | NV    | Las Vegas |
+	| Le Thai              |         1252 |   4.0 | Top Rated      | NV    | Las Vegas |
+	| Scarpetta            |         1116 |   4.0 | Top Rated      | NV    | Las Vegas |
+	| Diablos Cantina      |         1084 |   3.0 | High Rating    | NV    | Las Vegas |
+	| MGM Grand Buffet     |          961 |   2.5 | Average Rating | NV    | Las Vegas |
+	| Joyride Taco House   |          902 |   4.0 | Top Rated      | AZ    | Gilbert   |
+	+----------------------+--------------+-------+----------------+-------+-----------+
+```
 Regardless, among 'premium' businesses review count held a strong correlation with large volume of 'premium' counts across city and state metrics. The city with the most 'premium' businesses (Las Vegas) also held a strong lead ahead of all other cities in review count (diffrences of 48,351 for review count and 560 'premium' businesses). Of course Las Vegas as notable worldwide center for adult entertainment might influence its large lead ahead of other cities and states. The top ten cities displayed slight variability in position of the top ten most premium businesses compared to the ten most reviewed cities, but largely the same cities remained on the list with the exception of Chandler, AZ and Mesa, AZ.
 
+
+```sql
+-- Top ten states with the most premium businesses
+SELECT state,
+    COUNT(stars = 5) AS Premium_Business_Count,
+    SUM(review_count) AS TotalNumberOfReviews
+FROM  business
+GROUP BY state
+ORDER BY Premium_Business_Count DESC
+LIMIT 10;
+```
+```
+	+-------+------------------------+----------------------+
+	| state | Premium_Business_Count | TotalNumberOfReviews |
+	+-------+------------------------+----------------------+
+	| AZ    |                   3042 |               100548 |
+	| NV    |                   1921 |                96494 |
+	| ON    |                   1664 |                36373 |
+	| OH    |                    747 |                14814 |
+	| NC    |                    722 |                17140 |
+	| PA    |                    553 |                13211 |
+	| QC    |                    465 |                10738 |
+	| WI    |                    253 |                 6410 |
+	| EDH   |                    237 |                 2742 |
+	| BW    |                    202 |                 2412 |
+	+-------+------------------------+----------------------+
+```
+
+```sql
+-- Top ten states with the most premium businesses
+SELECT state,
+    COUNT(stars = 5) AS Premium_Business_Count,
+    SUM(review_count) AS TotalNumberOfReviews
+FROM  business
+GROUP BY state
+ORDER BY Premium_Business_Count DESC
+LIMIT 10;
+```
+```
+	+-------+------------------------+----------------------+
+	| state | Premium_Business_Count | TotalNumberOfReviews |
+	+-------+------------------------+----------------------+
+	| AZ    |                   3042 |               100548 |
+	| NV    |                   1921 |                96494 |
+	| ON    |                   1664 |                36373 |
+	| OH    |                    747 |                14814 |
+	| NC    |                    722 |                17140 |
+	| PA    |                    553 |                13211 |
+	| QC    |                    465 |                10738 |
+	| WI    |                    253 |                 6410 |
+	| EDH   |                    237 |                 2742 |
+	| BW    |                    202 |                 2412 |
+	+-------+------------------------+----------------------+
+```
+
 Similar to what the top ten cities with the highest review count and 'premium' business count revealed, the top ten groupings by state revealed little variability. The three states at the top of the list held the same position across both aggregations. In fact the top nine states were all the same states across review count and 'premium' business count with the only position change occuring at the fourth and fifth spots across lists alternating between North Carolina and Ohio. The tenth spot changed dramatically across lists. This most likely occured due to the same trend affecting both tables: 'premium' businesses do not numerically have a larger decrease in count moving down the list, but their decrease wildly displaces the amount of reviews. As a result of this the number of reviews becomes much less stable as 'premium' volume decreases. This is because the 'TotalNumberOfReviews' column is unaffected by number of stars meaning that the less that the 'premium' can impact the number of reviews, the less likely there will be a correlation between the two constraints.
+
+Average ratings across businesses in states produced an entirely set of results 
+```sql
+SELECT name,
+		name 
+		,review_count
+		SUBSTR(AVG(stars),1,4) AS AverageStarRating
+		,CASE
+			WHEN stars = 5 THEN 'Premium Rated'
+			WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
+			WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
+			WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
+			WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
+			ELSE 'This is weird.. check on this one'
+		END AS 'StarCategory'
+		state
+	FROM business
+	GROUP BY state
+	ORDER BY AverageStarRating DESC
+	LIMIT 10;
+```
+```
+	+-------+-------------------+
+	| state | AverageStarRating |
+	+-------+-------------------+
+	| ST    | 5.0               |
+	| ELN   | 4.16              |
+	| MLN   | 3.87              |
+	| EDH   | 3.78              |
+	| BW    | 3.75              |
+	| PA    | 3.74              |
+	| AZ    | 3.72              |
+	| NV    | 3.72              |
+	| WI    | 3.70              |
+	| FIF   | 3.7               |
+	+-------+-------------------+
+```
+```sql
+SELECT name,
+		review_count,
+		SUBSTR(AVG(stars),1,4) AS AverageStarRating,
+		state,
+		CASE
+			WHEN stars = 5 THEN 'Premium Rated'
+			WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
+			WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
+			WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
+			WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
+			ELSE 'This is weird.. check on this one'
+		END AS 'StarCategory'
+	FROM business
+	WHERE review_count > 1000
+	GROUP BY name
+	ORDER BY AverageStarRating DESC
+	LIMIT 10;
+```
+
+
+
+
 
 
 ## Extra Queries 
