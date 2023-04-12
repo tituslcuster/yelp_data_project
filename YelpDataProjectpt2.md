@@ -501,38 +501,13 @@ The highest average star rating highlighted a really important relationship betw
 	| A&B Scissor Hands                      |           12 | 5.0               | IL    | Premium Rated |
 	+----------------------------------------+--------------+-------------------+-------+---------------+
 ```
-In fact, of the 10,000 businesses in this data set, **only 8 of them had reviews over 1,000**
-```sql
-SELECT COUNT(*) AS Number_Of_Reviews_Over_1000
-	FROM business
-	WHERE review_count >= 1000 
-```
-```
-+-----------------------------+
-| Number_Of_Reviews_Over_1000 |
-+-----------------------------+
-|                           8 |
-+-----------------------------+
-```
+In fact, of the 10,000 businesses in this data set: 
++ 	8 had reviews over 1,000
++ 	4,705 had reviews under 10
+
+
 
 ## Extra Queries 
-```sql
-SELECT city
-    ,name
-    ,stars
-    ,is_open
-        ,CASE
-        WHEN stars = 5 THEN 'Premium Rated'
-        WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
-        WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
-        WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
-        WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
-        ELSE 'This is weird.. check on this one'
-    END AS 'StarCategory'
-FROM business
-ORDER BY Star_Category DESC, is_open DESC;
-```
-
 Closed premium rated businesses  
 ```sql
 SELECT name
