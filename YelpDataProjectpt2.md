@@ -383,36 +383,9 @@ LIMIT 10;
 	+-------+------------------------+----------------------+
 ```
 
-```sql
--- Top ten states with the most premium businesses
-SELECT state,
-    COUNT(stars = 5) AS Premium_Business_Count,
-    SUM(review_count) AS TotalNumberOfReviews
-FROM  business
-GROUP BY state
-ORDER BY Premium_Business_Count DESC
-LIMIT 10;
-```
-```
-	+-------+------------------------+----------------------+
-	| state | Premium_Business_Count | TotalNumberOfReviews |
-	+-------+------------------------+----------------------+
-	| AZ    |                   3042 |               100548 |
-	| NV    |                   1921 |                96494 |
-	| ON    |                   1664 |                36373 |
-	| OH    |                    747 |                14814 |
-	| NC    |                    722 |                17140 |
-	| PA    |                    553 |                13211 |
-	| QC    |                    465 |                10738 |
-	| WI    |                    253 |                 6410 |
-	| EDH   |                    237 |                 2742 |
-	| BW    |                    202 |                 2412 |
-	+-------+------------------------+----------------------+
-```
-
 Similar to what the top ten cities with the highest review count and 'premium' business count revealed, the top ten groupings by state revealed little variability. The three states at the top of the list held the same position across both aggregations. In fact the top nine states were all the same states across review count and 'premium' business count with the only position change occuring at the fourth and fifth spots across lists alternating between North Carolina and Ohio. The tenth spot changed dramatically across lists. This most likely occured due to the same trend affecting both tables: 'premium' businesses do not numerically have a larger decrease in count moving down the list, but their decrease wildly displaces the amount of reviews. As a result of this the number of reviews becomes much less stable as 'premium' volume decreases. This is because the 'TotalNumberOfReviews' column is unaffected by number of stars meaning that the less that the 'premium' can impact the number of reviews, the less likely there will be a correlation between the two constraints.
 
-Average ratings across businesses in states produced an entirely set of results 
+Average ratings across businesses in states produced an entirely set of results that portrayed
 ```sql
 SELECT name,
 		name 
@@ -449,29 +422,98 @@ SELECT name,
 	+-------+-------------------+
 ```
 ```sql
-SELECT name,
-		review_count,
-		SUBSTR(AVG(stars),1,4) AS AverageStarRating,
-		state,
-		CASE
-			WHEN stars = 5 THEN 'Premium Rated'
-			WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
-			WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
-			WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
-			WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
-			ELSE 'This is weird.. check on this one'
-		END AS 'StarCategory'
-	FROM business
-	WHERE review_count > 1000
-	GROUP BY name
-	ORDER BY AverageStarRating DESC
-	LIMIT 10;
+	SELECT name,
+			review_count,
+			SUBSTR(AVG(stars),1,4) AS AverageStarRating,
+			state,
+			CASE
+				WHEN stars = 5 THEN 'Premium Rated'
+				WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
+				WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
+				WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
+				WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
+				ELSE 'This is weird.. check on this one'
+			END AS 'StarCategory'
+		FROM business
+		GROUP BY name
+		ORDER BY review_count DESC
+		LIMIT 10;
 ```
-
-
-
-
-
+```
+	+----------------------+--------------+-------------------+-------+----------------+
+	| name                 | review_count | AverageStarRating | state | StarCategory   |
+	+----------------------+--------------+-------------------+-------+----------------+
+	| The Buffet           |         3873 | 3.5               | NV    | High Rating    |
+	| Schwartz's           |         1757 | 4.0               | QC    | Top Rated      |
+	| Joe's Farm Grill     |         1549 | 4.0               | AZ    | Top Rated      |
+	| Carson Kitchen       |         1410 | 4.5               | NV    | Top Rated      |
+	| Delmonico Steakhouse |         1389 | 4.0               | NV    | Top Rated      |
+	| Le Thai              |         1252 | 4.0               | NV    | Top Rated      |
+	| Scarpetta            |         1116 | 4.0               | NV    | Top Rated      |
+	| Diablo's Cantina     |         1084 | 3.0               | NV    | High Rating    |
+	| MGM Grand Buffet     |          961 | 2.5               | NV    | Average Rating |
+	| Joyride Taco House   |          902 | 4.0               | AZ    | Top Rated      |
+	+----------------------+--------------+-------------------+-------+----------------+
+```
+The highest average star rating highlighted a really important relationship between the sample size of review count as it relates to the average star rating. From my own life experience I have found it to be a common ancedote for reviewing the ratings of a product or service by checking the number of reviews associated with the rating. Common business practice would be to have friends and family rate a business highly regardless of their actual opinion of the business.
+```sql
+	SELECT name,
+			review_count,
+			SUBSTR(AVG(stars),1,4) AS AverageStarRating,
+			state,
+			CASE
+				WHEN stars = 5 THEN 'Premium Rated'
+				WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
+				WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
+				WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
+				WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
+				ELSE 'This is weird.. check on this one'
+			END AS 'StarCategory'
+		FROM business
+		--WHERE review_count > 1000
+		GROUP BY name
+		ORDER BY AverageStarRating DESC
+		LIMIT 20;
+```
+```
+	+----------------------------------------+--------------+-------------------+-------+---------------+
+	| name                                   | review_count | AverageStarRating | state | StarCategory  |
+	+----------------------------------------+--------------+-------------------+-------+---------------+
+	| 10 Factory Fitness Center              |            4 | 5.0               | AZ    | Premium Rated |
+	| 12th House Interiors                   |            4 | 5.0               | OH    | Premium Rated |
+	| 24/7 Carpet & Floor Care               |           47 | 5.0               | NV    | Premium Rated |
+	| 24/7 Vegas VIP                         |            7 | 5.0               | NV    | Premium Rated |
+	| 305 Kustoms                            |           28 | 5.0               | NV    | Premium Rated |
+	| 3D MicroworksLV                        |            4 | 5.0               | NV    | Premium Rated |
+	| 3rd Thursday Adventure Run Tempe       |            9 | 5.0               | AZ    | Premium Rated |
+	| 4E Kennels                             |           24 | 5.0               | NV    | Premium Rated |
+	| 50/50 Realty                           |            4 | 5.0               | AZ    | Premium Rated |
+	| 808 Car Audio Evolution                |            4 | 5.0               | NV    | Premium Rated |
+	| A Brighter Avenue                      |            5 | 5.0               | AZ    | Premium Rated |
+	| A Caring Dental Group                  |            3 | 5.0               | OH    | Premium Rated |
+	| A Desert Custom Cycles                 |            4 | 5.0               | AZ    | Premium Rated |
+	| A Kleener Image                        |            5 | 5.0               | OH    | Premium Rated |
+	| A Little Off                           |            6 | 5.0               | NV    | Premium Rated |
+	| A Magical Day, Princess Parties & More |            4 | 5.0               | NV    | Premium Rated |
+	| A Safe Pool of Arizona                 |           15 | 5.0               | AZ    | Premium Rated |
+	| A Signature Gifts Antiques & Furniture |            3 | 5.0               | OH    | Premium Rated |
+	| A Way Home Moving                      |           21 | 5.0               | WI    | Premium Rated |
+	| A&B Scissor Hands                      |           12 | 5.0               | IL    | Premium Rated |
+	+----------------------------------------+--------------+-------------------+-------+---------------+
+```
+In fact, of the 10,000 businesses in this data set, **only 8 of them had reviews over 1,000**
+```sql
+SELECT COUNT(*) AS Number_Of_Reviews_Over_1000
+	FROM business
+	WHERE review_count >= 1000 
+```
+```
++-----------------------------+
+| Number_Of_Reviews_Over_1000 |
++-----------------------------+
+|                           8 |
++-----------------------------+
+```
 
 ## Extra Queries 
 ```sql
@@ -683,133 +725,4 @@ Top ten cities with the most reviews
 	| QC    | Montréal   |                    337 |                 9448 |
 	| AZ    | Chandler   |                    232 |                 8112 |
 	+-------+------------+------------------------+----------------------+
-```
-Finding a set of businesses with the highest and lowest number of ratings for a better picture of review volume
-```sql
-	SELECT name, review_count
-	FROM business
-	ORDER BY review_count DESC
-	LIMIT 10;
-```
-```
-	+----------------------+--------------+
-	| name                 | review_count |
-	+----------------------+--------------+
-	| The Buffet           |         3873 |
-	| Schwartz's           |         1757 |
-	| Joe's Farm Grill     |         1549 |
-	| Carson Kitchen       |         1410 |
-	| Delmonico Steakhouse |         1389 |
-	| Le Thai              |         1252 |
-	| Scarpetta            |         1116 |
-	| Diablos Cantina     |         1084 |
-	| MGM Grand Buffet     |          961 |
-	| Joyride Taco House   |          902 |
-	+----------------------+--------------+
-
-Coupling the last query with star information for categorical insight
-```sql
-	SELECT name 
-		,review_count
-		,stars
-		,CASE
-			WHEN stars = 5 THEN 'Premium Rated'
-			WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
-			WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
-			WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
-			WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
-			ELSE 'This is weird.. check on this one'
-		END AS 'StarCategory'
-	FROM business
-	ORDER BY review_count DESC
-	LIMIT 10;
-```
-```
-	+----------------------+--------------+-------+----------------+
-	| name                 | review_count | stars | StarCategory   |
-	+----------------------+--------------+-------+----------------+
-	| The Buffet           |         3873 |   3.5 | High Rating    |
-	| Schwartz's           |         1757 |   4.0 | Top Rated      |
-	| Joe's Farm Grill     |         1549 |   4.0 | Top Rated      |
-	| Carson Kitchen       |         1410 |   4.5 | Top Rated      |
-	| Delmonico Steakhouse |         1389 |   4.0 | Top Rated      |
-	| Le Thai              |         1252 |   4.0 | Top Rated      |
-	| Scarpetta            |         1116 |   4.0 | Top Rated      |
-	| Diablos Cantina      |         1084 |   3.0 | High Rating    |
-	| MGM Grand Buffet     |          961 |   2.5 | Average Rating |
-	| Joyride Taco House   |          902 |   4.0 | Top Rated      |
-	+----------------------+--------------+-------+----------------+
-```
-
-Adding city and state information for further insight
-```sql
-		SELECT name 
-		,review_count
-		,stars
-		,CASE
-			WHEN stars = 5 THEN 'Premium Rated'
-			WHEN stars >= 4 AND stars < 5 THEN 'Top Rated'
-			WHEN stars >= 3 AND stars < 4 THEN 'High Rating'
-			WHEN stars >= 2 AND stars < 3 THEN 'Average Rating'
-			WHEN stars >= 1 AND stars < 2 THEN 'Low Rating'
-			ELSE 'This is weird.. check on this one'
-		END AS 'StarCategory'
-		,state
-		,city
-	FROM business
-	ORDER BY review_count DESC
-	LIMIT 10;
-```    
-```
-	+----------------------+--------------+-------+----------------+-------+-----------+
-	| name                 | review_count | stars | StarCategory   | state | city      |
-	+----------------------+--------------+-------+----------------+-------+-----------+
-	| The Buffet           |         3873 |   3.5 | High Rating    | NV    | Las Vegas |
-	| Schwartz's           |         1757 |   4.0 | Top Rated      | QC    | Montréal  |
-	| Joe's Farm Grill     |         1549 |   4.0 | Top Rated      | AZ    | Gilbert   |
-	| Carson Kitchen       |         1410 |   4.5 | Top Rated      | NV    | Las Vegas |
-	| Delmonico Steakhouse |         1389 |   4.0 | Top Rated      | NV    | Las Vegas |
-	| Le Thai              |         1252 |   4.0 | Top Rated      | NV    | Las Vegas |
-	| Scarpetta            |         1116 |   4.0 | Top Rated      | NV    | Las Vegas |
-	| Diablos Cantina      |         1084 |   3.0 | High Rating    | NV    | Las Vegas |
-	| MGM Grand Buffet     |          961 |   2.5 | Average Rating | NV    | Las Vegas |
-	| Joyride Taco House   |          902 |   4.0 | Top Rated      | AZ    | Gilbert   |
-	+----------------------+--------------+-------+----------------+-------+-----------+
-```
-States with the highest stars
-```sql
-	SELECT state,
-		SUBSTR(AVG(stars),1,4) AS AverageStarRating
-	FROM business
-	GROUP BY state
-	ORDER BY AverageStarRating DESC;
-```
-```
-	+-------+-------------------+
-	| state | AverageStarRating |
-	+-------+-------------------+
-	| ST    | 5.0               |
-	| ELN   | 4.16              |
-	| MLN   | 3.87              |
-	| EDH   | 3.78              |
-	| BW    | 3.75              |
-	| PA    | 3.74              |
-	| AZ    | 3.72              |
-	| NV    | 3.72              |
-	| WI    | 3.70              |
-	| FIF   | 3.7               |
-	| HLD   | 3.66              |
-	| NYK   | 3.66              |
-	| QC    | 3.63              |
-	| OH    | 3.58              |
-	| NC    | 3.56              |
-	| SC    | 3.52              |
-	| IL    | 3.50              |
-	| ESX   | 3.5               |
-	| NY    | 3.5               |
-	| WLN   | 3.5               |
-	| ON    | 3.46              |
-	| C     | 3.33              |
-	| NI    | 3.0               |
-	+-------+-------------------+
 ```
