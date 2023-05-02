@@ -93,7 +93,7 @@ Unfortunately the 'Soul Food' Yelp category only returned two rated businesses, 
 ```
 
 ## 1. Is there a difference in distribution of hours for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
-The businesses in Scotssdale with listed hours show much more variablitiy in their hours while the 'Soul Food' businesses have much more consistant hours. Opening times remain largely the same across all businesses, with the only exceptions coming on weekends.  In fact the only changes in opening time occured on Sundays.'The Cider Mill' in Scottsdale and the other 'Charlie Ds Catfish & Chicken' a Soul Food business were the only two businesses with fluctuation in opening time.
+The businesses in Scottsdale with listed hours show much more variablitiy in their hours while the 'Soul Food' businesses have much more consistant hours. Opening times remain largely the same across all businesses, with the only exceptions coming on weekends.  In fact the only changes in opening time occured on Sundays.'The Cider Mill' in Scottsdale and the other 'Charlie Ds Catfish & Chicken' a Soul Food business were the only two businesses with fluctuation in opening time.
 
 ```
     +---------------+--------------------------+-----------------------+
@@ -102,8 +102,6 @@ The businesses in Scotssdale with listed hours show much more variablitiy in the
     | Scottsdale    | The Cider Mill           | Sunday|11:00-16:00    |
     | North Randall | Oinky's Pork Chop Heaven | Sunday|6:00-23:00     |
     +---------------+--------------------------+-----------------------+
-
-
 ```
 
 Closing times displayed the highest range of variablitiy across the entire dataset, but largely for businesses in Scottsdale. Soul Food businesses generally did not change their closing times with only one exception on a single day. 'Charlie Ds Catfish & Chicken' had the only closing and opening time fluctuation for a Soul Food business occuring all on Sunday. 
@@ -202,7 +200,9 @@ Both groups show very different sizes of reviews due to the wide range in sample
 There were 20,614 reviews in the city of Scottsdale, and there were only 10 total reviews for the 'Soul Food' business category. The difference in review count between both constraint was vast.
          
 ## 3. Can anything be inferred from the location data provided between businesses in Scottsdale, AZ and 'Soul Food' businesses?
-There is nothing to infer based off of location since both of the two 'Soul Food' businesses are located in seperate cities (North Randall, and Phoenix). To discover this I began by identifying the specific latitude and longitude of the two 'Soul Food' businesses since there were only two factors to query against for Scottsdale.
+One of the only two Soul Food (Charlie D's in Phoenix) businsess share the same state as Scottsdale. This was a suprising discovery given that there were only two data points for the "Soul Food" category but there were 
+
+To discover this I began by identifying the specific latitude and longitude of the two 'Soul Food' businesses since there were only two factors to query against for Scottsdale.
 ```sql
 		SELECT DISTINCT b.name,
 			b.latitude,
@@ -218,6 +218,29 @@ There is nothing to infer based off of location since both of the two 'Soul Food
 		| Oinky's Pork Chop Heaven      |  41.4352 |  -81.5214 |
 		| Charlie D's Catfish & Chicken |  33.4468 |  -112.057 |
 		+-------------------------------+----------+-----------+
+```
+
+```sql
+	SELECT DISTINCT b.city,
+		b.name,
+		b.latitude,
+		b.longitude
+	FROM business b 
+		INNER JOIN category c ON c.business_id = b.id 
+		INNER JOIN hours h ON b.id = h.business_id
+	WHERE city = 'Scottsdale'
+		AND name IN ('Taliesin West',
+			'The Cider Mill',
+			'Scent From Above Company')
+```
+```
+		+------------+--------------------------+----------+-----------+
+		| city       | name                     | latitude | longitude |
+		+------------+--------------------------+----------+-----------+
+		| Scottsdale | Taliesin West            |  33.6063 |  -111.845 |
+		| Scottsdale | The Cider Mill           |  33.4934 |  -111.925 |
+		| Scottsdale | Scent From Above Company |  33.6656 |  -112.111 |
+		+------------+--------------------------+----------+-----------+
 ```
 With the coordinates identified for the smaller list of businesses, now it was time to attempt to match the two sets of variables against the 994 potential matches in latitude or longitude with the businesses in Scottsdale.
 
@@ -316,7 +339,7 @@ The Star Categories are as follows:s
 ### Decription of the data needed and used for this analysis
 For the purposes of this analysis I focused only the 'premium rated' businesses against the number of reviews that they contained. Comparisons were ran based on city, state, and open/closed status while querying for outliers and summary data to get a good grasp on the larger points of this dataset. Sampleing the top ten of different variations of the dataset proved effective in examining the larger differences between the greatest volumes of star category and review count. 
 
-None of the businesses within the top 10 most reviewed on Yelp had anything above a 4.5. The same group didnt dip past 2.5 as the lowest rating. I would infer that this range of rating could be the result of the prime motivator behind a consumer reviewing a business on Yelp. The main reasons why a consumer would take time to review a business on Yelp is because they had an experience that they wanted to share with other people. While average ratings for businesses might display more volume in the 'average' and 'low' categories, an area for further analysis would be if individual reviews tend more towards wide swings in star category compared to the average rating of the business.
+No business within the top 10 most reviewed on Yelp had anything above a 4.5 rating or rating lower than 2.5. I would infer that this range of rating could be the result of the prime motivator behind a consumer reviewing a business on Yelp. The main reasons why a consumer would take time to review a business on Yelp is because they had an experience that they wanted to share with other people. While average ratings for businesses might display more volume in the 'average' and 'low' categories, an area for further analysis would be if individual reviews tend more towards wide swings in star category compared to the average rating of the business.
 
 ```sql
 -- Top 10 businesses with the most reviews
@@ -472,34 +495,39 @@ The highest average star rating highlighted a really important relationship betw
 		FROM business
 		--WHERE review_count > 1000
 		GROUP BY name
-		ORDER BY AverageStarRating DESC
-		LIMIT 20;
+		ORDER BY AverageStarRating DESC;
 ```
 ```
-	+----------------------------------------+--------------+-------------------+-------+---------------+
-	| name                                   | review_count | AverageStarRating | state | StarCategory  |
-	+----------------------------------------+--------------+-------------------+-------+---------------+
-	| 10 Factory Fitness Center              |            4 | 5.0               | AZ    | Premium Rated |
-	| 12th House Interiors                   |            4 | 5.0               | OH    | Premium Rated |
-	| 24/7 Carpet & Floor Care               |           47 | 5.0               | NV    | Premium Rated |
-	| 24/7 Vegas VIP                         |            7 | 5.0               | NV    | Premium Rated |
-	| 305 Kustoms                            |           28 | 5.0               | NV    | Premium Rated |
-	| 3D MicroworksLV                        |            4 | 5.0               | NV    | Premium Rated |
-	| 3rd Thursday Adventure Run Tempe       |            9 | 5.0               | AZ    | Premium Rated |
-	| 4E Kennels                             |           24 | 5.0               | NV    | Premium Rated |
-	| 50/50 Realty                           |            4 | 5.0               | AZ    | Premium Rated |
-	| 808 Car Audio Evolution                |            4 | 5.0               | NV    | Premium Rated |
-	| A Brighter Avenue                      |            5 | 5.0               | AZ    | Premium Rated |
-	| A Caring Dental Group                  |            3 | 5.0               | OH    | Premium Rated |
-	| A Desert Custom Cycles                 |            4 | 5.0               | AZ    | Premium Rated |
-	| A Kleener Image                        |            5 | 5.0               | OH    | Premium Rated |
-	| A Little Off                           |            6 | 5.0               | NV    | Premium Rated |
-	| A Magical Day, Princess Parties & More |            4 | 5.0               | NV    | Premium Rated |
-	| A Safe Pool of Arizona                 |           15 | 5.0               | AZ    | Premium Rated |
-	| A Signature Gifts Antiques & Furniture |            3 | 5.0               | OH    | Premium Rated |
-	| A Way Home Moving                      |           21 | 5.0               | WI    | Premium Rated |
-	| A&B Scissor Hands                      |           12 | 5.0               | IL    | Premium Rated |
-	+----------------------------------------+--------------+-------------------+-------+---------------+
+		+----------------------------------------+--------------+-------------------+-------+---------------+
+		| name                                   | review_count | AverageStarRating | state | StarCategory  |
+		+----------------------------------------+--------------+-------------------+-------+---------------+
+		| 10 Factory Fitness Center              |            4 | 5.0               | AZ    | Premium Rated |
+		| 12th House Interiors                   |            4 | 5.0               | OH    | Premium Rated |
+		| 24/7 Carpet & Floor Care               |           47 | 5.0               | NV    | Premium Rated |
+		| 24/7 Vegas VIP                         |            7 | 5.0               | NV    | Premium Rated |
+		| 305 Kustoms                            |           28 | 5.0               | NV    | Premium Rated |
+		| 3D MicroworksLV                        |            4 | 5.0               | NV    | Premium Rated |
+		| 3rd Thursday Adventure Run Tempe       |            9 | 5.0               | AZ    | Premium Rated |
+		| 4E Kennels                             |           24 | 5.0               | NV    | Premium Rated |
+		| 50/50 Realty                           |            4 | 5.0               | AZ    | Premium Rated |
+		| 808 Car Audio Evolution                |            4 | 5.0               | NV    | Premium Rated |
+		| A Brighter Avenue                      |            5 | 5.0               | AZ    | Premium Rated |
+		| A Caring Dental Group                  |            3 | 5.0               | OH    | Premium Rated |
+		| A Desert Custom Cycles                 |            4 | 5.0               | AZ    | Premium Rated |
+		| A Kleener Image                        |            5 | 5.0               | OH    | Premium Rated |
+		| A Little Off                           |            6 | 5.0               | NV    | Premium Rated |
+		| A Magical Day, Princess Parties & More |            4 | 5.0               | NV    | Premium Rated |
+		| A Safe Pool of Arizona                 |           15 | 5.0               | AZ    | Premium Rated |
+		| A Signature Gifts Antiques & Furniture |            3 | 5.0               | OH    | Premium Rated |
+		| A Way Home Moving                      |           21 | 5.0               | WI    | Premium Rated |
+		| A&B Scissor Hands                      |           12 | 5.0               | IL    | Premium Rated |
+		| A-Maise-ing Images                     |            7 | 5.0               | NC    | Premium Rated |
+		| A-Z Septic Pumping                     |           10 | 5.0               | AZ    | Premium Rated |
+		| A1 Insurance LLC                       |            3 | 5.0               | AZ    | Premium Rated |
+		| A2Z Handyman Services                  |            7 | 5.0               | AZ    | Premium Rated |
+		| ASICS Outlet                           |            3 | 5.0               | AZ    | Premium Rated |
+		+----------------------------------------+--------------+-------------------+-------+---------------+
+		(Output limit exceeded, 25 of 8927 total rows shown)
 ```
 In fact, of the 10,000 businesses in this data set: 
 + 	8 had reviews over 1,000
