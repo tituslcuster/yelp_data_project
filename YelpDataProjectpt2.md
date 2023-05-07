@@ -200,7 +200,7 @@ Both groups show very different sizes of reviews due to the wide range in sample
 There were 20,614 reviews in the city of Scottsdale, and there were only 10 total reviews for the 'Soul Food' business category. The difference in review count between both constraint was vast.
          
 ## 3. Can anything be inferred from the location data provided between businesses in Scottsdale, AZ and 'Soul Food' businesses?
-One of the only two Soul Food (Charlie D's in Phoenix) businsess share the same state as Scottsdale. This was a suprising discovery given that there were only two data points for the "Soul Food" category but there were 
+One of the only two Soul Food (Charlie D's in Phoenix) businsess share the same state as Scottsdale (Arizona). This was a suprising discovery given that there were only two data points for the "Soul Food" category that could have 
 
 To discover this I began by identifying the specific latitude and longitude of the two 'Soul Food' businesses since there were only two factors to query against for Scottsdale.
 ```sql
