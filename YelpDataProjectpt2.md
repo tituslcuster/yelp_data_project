@@ -5,11 +5,11 @@ This document covers part 2 of the assignment and contains some questions for de
 
 ## Index
 i. Summary Data for the questions
-1. Question #1 -- Is there a difference in distribution of hours for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
-2. Question #2 -- Is there a difference in number of reviews for businesses in Scottsdale, AZ compared to 'Soul Food' businesses?
-3. Question #3 -- Can anything be inferred from the location data provided between businesses in Scottsdale, AZ and 'Soul Food' businesses?
+1. Question #1 -- Is there a difference in distribution of hours for businesses in Scottsdale, AZ compared to "Soul Food" businesses?
+2. Question #2 -- Is there a difference in number of reviews for businesses in Scottsdale, AZ compared to "Soul Food" businesses?
+3. Question #3 -- Can anything be inferred from the location data provided between businesses in Scottsdale, AZ and "Soul Food" businesses?
 4. Question #4 -- What differences are there between open and closed businesses?
-5. Question #5 -- What are the commonalities and anomalies between businesses clustered into 'Star Categories'?
+5. Question #5 -- What are the commonalities and anomalies between businesses clustered into "Star Categories"?
 
 ## i. -- Summary Data
 
