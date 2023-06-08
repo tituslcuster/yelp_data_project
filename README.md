@@ -2,6 +2,8 @@
 
 This SQL project was a final assignment for the Couersera course "[SQL for Data Science](https://www.coursera.org/account/accomplishments/verify/K93FFFBPQ9AC)". 
 
+If you would like to watch a presentation of this project you can find it "[here](https://www.youtube.com/watch?v=HH_HXlmfODg)".
+
 The "Yelp" project is made up of two major parts:
 + Part 1 -- [Dataset Profiling and Understanding](https://github.com/tituslcuster/yelp_data_project/blob/main/YelpDataProjectpt1.md)
 + Part 2 -- [Inferences and Analysis](https://github.com/tituslcuster/yelp_data_project/blob/main/YelpDataProjectpt2.md)
